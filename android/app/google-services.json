@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "288535839111",
+    "project_id": "fir-test-1ed02",
+    "storage_bucket": "fir-test-1ed02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288535839111:android:c3d3f14e89c78b4db51322",
+        "android_client_info": {
+          "package_name": "com.example.ecosoftvms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288535839111-79l13ml62k9al7dmqrtu3ri6cp79usrv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCznALfOMJyOFFvpjtXTJxC9X8v0k2o750"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288535839111-79l13ml62k9al7dmqrtu3ri6cp79usrv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "288535839111-b60nca7fhocl1cn2ckronaikmi2cgo5p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ecosoftvms"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288535839111:android:a2234446321171b6b51322",
+        "android_client_info": {
+          "package_name": "com.example.ecosoftvmsvisitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288535839111-79l13ml62k9al7dmqrtu3ri6cp79usrv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCznALfOMJyOFFvpjtXTJxC9X8v0k2o750"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288535839111-79l13ml62k9al7dmqrtu3ri6cp79usrv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "288535839111-b60nca7fhocl1cn2ckronaikmi2cgo5p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ecosoftvms"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

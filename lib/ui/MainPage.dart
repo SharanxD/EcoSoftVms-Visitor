@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key,
@@ -633,10 +632,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ),
-                  ElevatedButton(onPressed: ()async{
-                    final String applink= await PackageInfo.fromPlatform();
-
-                  }, child: Text("Press")),
                   const SizedBox(
                     height: 40,
                   ),

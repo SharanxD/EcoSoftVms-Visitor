@@ -6750,6 +6750,7 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 flutter_lints
+package_info
 path_provider
 path_provider_android
 path_provider_foundation

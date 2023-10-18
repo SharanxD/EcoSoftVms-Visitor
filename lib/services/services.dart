@@ -9,7 +9,7 @@ class Services{
     final snapshot=await firestore.collection("Staff").get();
     final List<DocumentSnapshot> documents = snapshot.docs;
     for(DocumentSnapshot element in documents){
-      staffs.add(Staff(EmailId: element["EmailId"], UserName: element["UserName"],phoneno: element["Phoneno"]));
+      staffs.add(Staff(EmailId: element["EmailId"], UserName: element["UserName"],phoneno: element["Phoneno"],ProfileLink: element["ProfileLink"]));
     }
     return staffs;
   }
@@ -37,7 +37,8 @@ class Services{
       "id": newVisitor.id,
       "aadharnumber": newVisitor.aadharnumber,
       "requesteddatetime": currentdate+"&"+currenttime,
-      "Staff": newVisitor.staff
+      "Staff": newVisitor.staff,
+      "Assets": newVisitor.assets
     };
     Map<String,dynamic> obj2={
       "VisitorName": newVisitor.Name,
@@ -61,10 +62,17 @@ class Services{
     final snapshot=await firestore.collection("AllVisitors").get();
     final List<DocumentSnapshot> documents = snapshot.docs;
     for(DocumentSnapshot element in documents){
-      visitors.add(Visitor(Name: element["VisitorName"],aadharnumber: element["aadharnumber"], CompanyName: element["CompanyName"], phoneno: element["Phoneno"], EmailId: element["Emailid"], Purpose:"", id: element["id"],staff: ""));
+      visitors.add(Visitor(Name: element["VisitorName"],aadharnumber: element["aadharnumber"], CompanyName: element["CompanyName"], phoneno: element["Phoneno"], EmailId: element["Emailid"], Purpose:"", id: element["id"],staff: "", assets: ''));
     }
     return visitors;
 
 
+  }
+  Future<DateTime> gettimestamp() async{
+    DateTime datetime= DateTime.now();
+    final snapshot = await firestore.collection("hosting").get();
+    final List<DocumentSnapshot> documents = snapshot.docs;
+    datetime = documents[0]["timestamp"].toDate();
+    return datetime;
   }
 }

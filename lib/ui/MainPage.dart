@@ -8,6 +8,7 @@ import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
@@ -19,6 +20,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  int pagenow=0;
   bool namegiven = false;
   bool companygiven = false;
   bool phonenogiven = false;
@@ -29,17 +31,18 @@ class _RegisterPageState extends State<RegisterPage> {
   bool aadhargiven=false;
   bool emailgiven=false;
   bool aadharvalid=false;
+  bool nosuchstaff = false;
+  bool assetgiven=false;
   bool valid= false;
-  int pagenow=0;
-  final _pagecontroller = PageController(initialPage: 1);
+  bool nosuchvisitor=false;
+  bool dategiven=false;
+
   List<Staff> allstaff = [];
   List<Staff> staffdisplay = [];
   List<Visitor> allvisitors=[];
   List<Visitor> visitordisplay =[];
-  bool nosuchstaff = false;
-  bool assetgiven=false;
-  DateTime timestamp= DateTime(1990);
-  bool nosuchvisitor=false;
+
+  final _pagecontroller = PageController(initialPage: 1);
   var staffselected = TextEditingController();
   var name = TextEditingController();
   var company = TextEditingController();
@@ -50,8 +53,13 @@ class _RegisterPageState extends State<RegisterPage> {
   final _searchcontrollervisitor = TextEditingController();
   final aadharcontroller = TextEditingController();
   final assetcontroller = TextEditingController();
+  final datecontroller = TextEditingController();
 
   final Services _s = Services();
+
+
+  DateTime timestamp= DateTime(2030);
+
   Future<void> sessionvalid() async{
     if(DateTime.now().isBefore(timestamp.add(const Duration(minutes: 30)))){
       setState(() {
@@ -525,6 +533,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                               width: size.width*0.15,
                                               height: 60,
                                               child: TextField(
+                                                readOnly: true,
                                                   controller: staffselected,
                                                   onChanged: (value){
                                                     setState(() {
@@ -542,6 +551,60 @@ class _RegisterPageState extends State<RegisterPage> {
                                             ),
                                             TextButton(onPressed: (){
                                               choosestaff();
+
+
+                                            },child: Text("Choose",style: GoogleFonts.questrial(fontSize: 28,color: Colors.blue),),)
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: size.width*0.25,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(10)
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 20.0,right: 20),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                              width: size.width*0.15,
+                                              height: 60,
+                                              child: TextField(
+                                                  readOnly: true,
+                                                  controller: datecontroller,
+                                                  onChanged: (value){
+                                                    setState(() {
+                                                      dategiven=(datecontroller.text!="");
+
+                                                    });
+                                                  },
+                                                  decoration: InputDecoration(
+                                                      border: InputBorder.none,
+                                                      icon: Icon(Icons.calendar_today,color: dategiven?Colors.green:Colors.blueGrey,size: 30,),
+                                                      hintText: "Select Date of Visit",
+                                                      hintStyle: GoogleFonts.questrial(fontSize: 28,color: Colors.black54)
+                                                  ),
+                                                  style: GoogleFonts.questrial(fontSize: 28,color: Colors.black54)
+                                              ),
+                                            ),
+                                            TextButton(onPressed: ()async{
+                                              DateTime? pickedDate = await showDatePicker(
+
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime.now(),
+                                                  lastDate: DateTime(2030));
+                                              if(pickedDate!=null){
+                                                String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+                                                setState(() {
+                                                  datecontroller.text=formattedDate;
+                                                  dategiven=true;
+                                                });
+                                              }
 
 
                                             },child: Text("Choose",style: GoogleFonts.questrial(fontSize: 28,color: Colors.blue),),)
@@ -615,6 +678,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                               staffselected.clear();
                                               purpose.clear();
                                               assetcontroller.clear();
+                                              datecontroller.clear();
                                               namegiven=false;
                                               emailgiven=false;
                                               numbergiven=false;
@@ -623,6 +687,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                               staffgiven=false;
                                               purposegiven=false;
                                               assetgiven=false;
+                                              dategiven=false;
                                               pagenow=0;
                                             });
 

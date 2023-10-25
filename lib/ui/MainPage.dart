@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, unrelated_type_equality_checks, use_build_context_synchronously
 import 'dart:async';
+import 'dart:convert';
 import 'package:ecosoftvmsvisitor/modals/classes.dart';
 import 'package:ecosoftvmsvisitor/services/services.dart';
 import 'package:ecosoftvmsvisitor/ui/sessionoverpage.dart';
@@ -11,6 +12,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:http/http.dart' as http;
+
+String dateconvert(String dt){
+  DateTime inputDateTime = DateFormat('MMM dd y  hh:mma').parse(dt);
+  String outputString = DateFormat('dd-MM-y&HH.mm').format(inputDateTime);
+  return outputString; // Output: 20-10-2023 14.15
+}
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key,
@@ -56,7 +64,39 @@ class _RegisterPageState extends State<RegisterPage> {
   final datecontroller = TextEditingController();
 
   final Services _s = Services();
+  String hosturl="http://127.0.0.1:5000/visitor/host";
+  Future<void> gethosttime() async{
+    var response= await http.get(Uri.parse(hosturl));
+    final Map obj= json.decode(response.body);
+    setState(() {
+      timestamp=DateFormat('MMM dd y  hh:mma').parse(obj["hosttime"]);
+    });
+    sessionvalid();
 
+  }
+  Future<void> getstaffandvisitor() async{
+    String staffurl= "http://127.0.0.1:5000/staff/all";
+    String visitorurl= "http://127.0.0.1:5000/visitor/all";
+    var response= await http.get(Uri.parse(staffurl));
+    var response2= await http.get(Uri.parse(visitorurl));
+    final List list2= json.decode(response2.body);
+    final List list= json.decode(response.body);
+    List<Visitor> temp2=[];
+    List<Staff> temp=[];
+    for(var a in list){
+      temp.add(Staff(EmailId: a["Email"], UserName: a["Username"], phoneno: a["Phoneno"], ProfileLink: a["Profilelink"]));
+    }
+    for(var a in list2){
+      temp2.add(Visitor(Name: a["Visitorname"], CompanyName: a["Companyname"], phoneno: a["Phoneno"], EmailId: a["Email"], Purpose: "", id: "", staff: "", aadharnumber: a["Aadhar"], assets: ""));
+    }
+    setState(() {
+      allstaff=temp;
+      staffdisplay=temp;
+      allvisitors=temp2;
+      visitordisplay=temp2;
+    });
+
+  }
 
   DateTime timestamp= DateTime(2030);
 
@@ -75,46 +115,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
   }
-
-  Future<void> acquirestaffvisitor() async {
-    List<Staff> temp = await _s.getallstaff() as List<Staff>;
-    List<Visitor> temp2 = await _s.readVisitors() as List<Visitor>;
-
-    setState(() {
-      allstaff = temp;
-      staffdisplay=temp;
-      allvisitors=temp2;
-      visitordisplay=temp2;
-    });
-  }
-  Future<void> gettime() async{
-    DateTime dt= await _s.gettimestamp();
-    setState(() {
-      timestamp=dt;
-    });
-    sessionvalid();
-  }
-  Future<void> mailStaff(Visitor v) async{
-
-    String staffemail = await _s.getemail(v.staff);
-    String token="wbzu hfiq oyad sftv";
-    final smtpServer = gmail('testsptest223@gmail.com',token);
-    final message = Message()
-      ..from = const Address('testsptest223@gmail.com')
-      ..recipients.add(staffemail)
-      ..subject = 'Visitor Alert'
-      ..text= ""
-      ..html = "Hello ${v.staff}\nYou have a new Visitor waiting for approval.Please find the details below.\n<strong>Visitor Name:</strong> ${v.Name}</p><p><strong>Company Name:</strong> ${v.CompanyName}</p><p><strong>Visitor Email:&nbsp;</strong>${v.EmailId}&nbsp;</p><p><strong>Visiting Purpose:</strong> ${v.Purpose}</p><p><strong>Visitor Number: </strong>${v.phoneno}</p><p><strong>From VMS</strong></p>";
-
-    try {
-      await send(message, smtpServer);
-    } catch (error) {
-      if (kDebugMode) {
-        print(error.toString());
-      }
-    }
-  }
-
   void filterresult(String query) {
     setState(() {
       staffdisplay = allstaff
@@ -144,8 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState(){
-    acquirestaffvisitor();
-    gettime();
+    gethosttime();
+    getstaffandvisitor();
     super.initState();
   }
 
@@ -668,8 +668,40 @@ class _RegisterPageState extends State<RegisterPage> {
                                       onTap: ()async{
                                         if(companygiven && staffgiven &&purposegiven&&assetgiven){
                                           _pagecontroller.jumpToPage(2);
-                                          Visitor v = Visitor(Name: name.text, CompanyName: company.text, phoneno: phoneno.text, EmailId: email.text, Purpose: purpose.text, id: name.text+phoneno.text, staff: staffselected.text, aadharnumber: aadharcontroller.text, assets: assetcontroller.text);
-                                          await _s.addVisitor(v).then((value){
+                                          String currentdatetime =DateFormat('dd-MM-y&HH.mm').format(DateTime.now());
+                                          Visitor v = Visitor(Name: name.text, CompanyName: company.text, phoneno: phoneno.text, EmailId: email.text, Purpose: purpose.text, id: name.text+currentdatetime, staff: staffselected.text, aadharnumber: aadharcontroller.text, assets: assetcontroller.text);
+                                          String addvisitorurl= "http://127.0.0.1:5000/visitor/${v.Name}\$${v.EmailId}\$${v.phoneno}\$${v.CompanyName}\$${v.aadharnumber}\$${v.id}\$${v.staff}\$${v.Purpose}\$${v.assets}\$${currentdatetime}";
+                                          print(addvisitorurl);
+
+                                          var response= await http.put(Uri.parse(addvisitorurl));
+                                          if(response.body.toLowerCase().contains("added")){
+                                            setState(() {
+                                              name.clear();
+                                              email.clear();
+                                              phoneno.clear();
+                                              aadharcontroller.clear();
+                                              staffselected.clear();
+                                              purpose.clear();
+                                              assetcontroller.clear();
+                                              datecontroller.clear();
+                                              namegiven=false;
+                                              emailgiven=false;
+                                              numbergiven=false;
+                                              aadhargiven=false;
+                                              companygiven=false;
+                                              staffgiven=false;
+                                              purposegiven=false;
+                                              assetgiven=false;
+                                              dategiven=false;
+                                              pagenow=0;
+                                            });
+
+                                            FloatingSnackBar(message: "Visit Added", context: context,textStyle: GoogleFonts.questrial(fontSize: 24));
+                                          }else{
+                                            FloatingSnackBar(message: "An error has occurred", context: context,textStyle: GoogleFonts.questrial(fontSize: 24));
+                                          }
+
+                                          /*await _s.addVisitor(v).then((value){
                                             setState(() {
                                               name.clear();
                                               email.clear();
@@ -694,7 +726,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             FloatingSnackBar(message: "Visit Added", context: context,textStyle: GoogleFonts.questrial(fontSize: 24));
                                           }).catchError((error){
                                             FloatingSnackBar(message: "An error has occurred", context: context,textStyle: GoogleFonts.questrial(fontSize: 24));
-                                          });
+                                          });*/
 
                                         }else{
                                           FloatingSnackBar(message: "Fill all the necessary details", context: context,textStyle: GoogleFonts.questrial(fontSize: 24));

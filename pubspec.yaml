@@ -19,6 +19,7 @@ dependencies:
   email_validator: any
   mailer: any
   intl: any
+  http: any
 
 dev_dependencies:
   flutter_test:

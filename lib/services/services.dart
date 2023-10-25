@@ -68,11 +68,4 @@ class Services{
 
 
   }
-  Future<DateTime> gettimestamp() async{
-    DateTime datetime= DateTime.now();
-    final snapshot = await firestore.collection("hosting").get();
-    final List<DocumentSnapshot> documents = snapshot.docs;
-    datetime = documents[0]["timestamp"].toDate();
-    return datetime;
-  }
 }
